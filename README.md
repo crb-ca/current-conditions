@@ -1,9 +1,5 @@
-# React + Vite
+This creates a simple map showing most recent conditions in the Colorado River basin. The objective is a map that can be embedded into other sites using an iframe. As such, it is a full screen map.
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Please note that this is a work-in-progress, with more features forthcoming.
 
-Currently, two official plugins are available:
-
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
-"# current-conditions-map" 
+See: https://crb-ca.github.io/current-conditions-map
