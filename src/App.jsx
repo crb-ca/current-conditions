@@ -147,9 +147,8 @@ function App() {
   }
 
   return (
-    <>
-      <h1>Colorado River Conditions</h1>
-      <MapContainer id="map" center={mead.position} zoom={6} scrollWheelZoom={true}>
+    <div>
+      <MapContainer className="leaflet-map" center={mead.position} zoom={6} scrollWheelZoom={true}>
         <TileLayer
           attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
@@ -157,7 +156,7 @@ function App() {
         {/* {reaches.map(reach => <Reach key={String(reach)} reach={reach} />)} */}
         {reservoirs.map(res => <ReservoirMarker key={res.name} {...res} />)}
       </MapContainer>
-    </>
+    </div>
   )
 }
 
