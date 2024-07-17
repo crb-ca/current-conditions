@@ -2,4 +2,4 @@ This creates a simple map showing most recent conditions in the Colorado River b
 
 Please note that this is a work-in-progress, with more features forthcoming.
 
-See: https://crb-ca.github.io/current-conditions-map
+See: https://crb-ca.github.io/current-conditions
