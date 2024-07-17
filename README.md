@@ -1,4 +1,4 @@
-This creates a simple map showing most recent conditions in the Colorado River basin. The objective is a map that can be embedded into other sites using an iframe. As such, it is a full screen map.
+This creates a dashboard showing current and relevant past conditions in the Colorado River basin.
 
 Please note that this is a work-in-progress, with more features forthcoming.
 
