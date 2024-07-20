@@ -12,11 +12,11 @@ import {
     Polyline
 } from 'react-leaflet';
 
-import moment from 'moment';
+// import moment from 'moment';
 
-import './App.css';
+import './App.scss';
 
-import {Card, Typography} from "@mui/material";
+import {Card, Grid, Typography} from "@mui/material";
 
 import {Masonry} from "@mui/lab";
 // import { SVG } from 'leaflet';
@@ -25,6 +25,7 @@ import {reservoirs} from "./objects";
 import {toTitleCase} from './utils';
 import ReservoirStorageTable from "./components/ReservoirStorageTable.tsx";
 import Box from "@mui/material/Box";
+import SnowpackChart from "./components/SnowpackChart";
 
 const MAX_CAPACITY = 26.134000;
 
@@ -44,8 +45,12 @@ const H3 = ({children}) => <Typography variant="h3">{children}</Typography>;
 const H4 = ({children}) => <Typography variant="h4">{children}</Typography>;
 const DataCard = ({children, ...props}) => <Card className="data-card" {...props}>{children}</Card>;
 
+const USBRError = () => <div
+    style={{color: 'red'}}>{"Uh-oh! There's something wrong with USBR's server. Please refresh or try again tomorrow."}</div>
+
 function App() {
     const [storageConditions, setStorageConditions] = useState({});
+    const [storageError, setStorageError] = useState(false);
     const [system, setSystem] = useState({
         storage: 0,
         storage30: 0,
@@ -56,6 +61,10 @@ function App() {
         let _systemStorage = 0;
         axios.get('https://www.usbr.gov/lc/region/g4000/riverops/webreports/accumweb.json')
             .then(({data}) => {
+                if (data.includes('message')) {
+                    setStorageError(true);
+                    return;
+                }
                 const _storageConditions = data.Series.filter(s => s.DataTypeName === 'storage, end of period reading')
                     .reduce((obj, data) => {
                         const name = toTitleCase(data.SiteName);
@@ -80,7 +89,7 @@ function App() {
                     }, {});
                 setSystem({
                     ...system,
-                    storage:  Math.round(_systemStorage / 1e3) / 1e3,
+                    storage: Math.round(_systemStorage / 1e3) / 1e3,
                 });
                 setStorageConditions(_storageConditions);
             });
@@ -173,43 +182,65 @@ function App() {
 
             <H1>Colorado River conditions</H1>
 
-            <Box>
+            <Grid container columns={12} spacing={2}>
 
-                <H2>Reservoir Storage</H2>
+                <Grid item xs={0} md={0} lg={1}/>
 
-                <Masonry columns={{xs: 1, md: 2}} spacing={2}>
+                <Grid item xs={12} md={12} lg={10}>
 
-                    <DataCard>
-                        <H3>System Storage</H3>
-                        <H4>{system.storage || "loading..."} MAF</H4>
-                    </DataCard>
+                    <Box>
+                        <H2>Reservoir Storage</H2>
 
-                    <DataCard sx={{height: 500}}>
-                        <H3>System Map</H3>
-                        <MapContainer className="leaflet-map" center={mead.position} zoom={6} scrollWheelZoom={true}>
-                            <TileLayer
-                                attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-                                url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-                            />
-                            {/* {reaches.map(reach => <Reach key={String(reach)} reach={reach} />)} */}
-                            {reservoirs.map(res => <ReservoirMarker key={res.name} {...res} />)}
-                        </MapContainer>
-                        <div>
-                            Data Source: <a
-                            href="https://www.usbr.gov/lc/region/g4000/riverops/hourly7.html">https://www.usbr.gov/lc/region/g4000/riverops/hourly7.html</a>
-                        </div>
-                    </DataCard>
+                        <DataCard>
+                            <H3>System Storage</H3>
+                            {storageError ? <USBRError/> : <H4>{system.storage || "loading..."} MAF</H4>}
+                        </DataCard>
 
-                    <DataCard>
-                        <H3>Reservoirs</H3>
-                        <div>Bluer = higher storage percent</div>
-                        <div>* included in system storage calculation</div>
-                        <ReservoirStorageTable reservoirs={reservoirs} conditions={storageConditions}/>
-                    </DataCard>
+                        <DataCard>
+                            <H3>Reservoirs</H3>
+                            <div>
+                                <div>Bluer = higher storage percent</div>
+                                <div>* included in system storage calculation</div>
+                                <ReservoirStorageTable reservoirs={reservoirs} conditions={storageConditions}/>
+                            </div>
+                        </DataCard>
 
-                </Masonry>
+                        <DataCard>
+                            <H3>System Map</H3>
+                            <div className="map-wrapper">
+                                <MapContainer center={mead.position} zoom={6}
+                                              scrollWheelZoom={true}>
+                                    <TileLayer
+                                        attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+                                        url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+                                    />
+                                    {/* {reaches.map(reach => <Reach key={String(reach)} reach={reach} />)} */}
+                                    {reservoirs.map(res => <ReservoirMarker key={res.name} {...res} />)}
+                                </MapContainer>
+                            </div>
+                            <div>
+                                Data Source: <a
+                                href="https://www.usbr.gov/lc/region/g4000/riverops/hourly7.html">https://www.usbr.gov/lc/region/g4000/riverops/hourly7.html</a>
+                            </div>
+                        </DataCard>
 
-            </Box>
+                    </Box>
+
+                    <Box>
+                        <H2>Hydrologic conditions</H2>
+                        <H3>Snow accumulation</H3>
+                        <SnowpackChart/>
+                    </Box>
+
+                    <Box id="study">
+                        <H2>24-Month Study Projections</H2>
+                        <img src="https://www.usbr.gov/lc/region/g4000/riverops/WebReports/crmmsCloud_powell.png"/>
+                        <img src="https://www.usbr.gov/lc/region/g4000/riverops/WebReports/crmmsCloud_mead.png"/>
+                    </Box>
+
+                </Grid>
+
+            </Grid>
 
         </div>
     )

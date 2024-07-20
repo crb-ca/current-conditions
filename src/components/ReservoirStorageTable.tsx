@@ -25,10 +25,8 @@ const getColor = (value) => {
 }
 
 const ReservoirStorageTable: React.FC<ReservoirStorageTableProps> = ({reservoirs, conditions}) => {
-    // return <div>
-    //     <DataGrid columns={columns}/>
-    // </div>
-    return <TableContainer component={Paper}>
+
+    return <TableContainer className='table' component={Paper}>
         <Table sx={{minWidth: 600}} aria-label="simple table">
             <TableHead>
                 <TableRow>
