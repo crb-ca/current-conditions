@@ -61,7 +61,7 @@ function App() {
         let _systemStorage = 0;
         axios.get('https://www.usbr.gov/lc/region/g4000/riverops/webreports/accumweb.json')
             .then(({data}) => {
-                if (data.includes('message')) {
+                if (typeof data === 'string' && data.includes('message')) {
                     setStorageError(true);
                     return;
                 }
