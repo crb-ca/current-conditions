@@ -1,5 +1,5 @@
 import axios from 'axios';
-import {useEffect, useState} from 'react'
+import { useEffect, useState } from 'react'
 import {
     MapContainer,
     TileLayer,
@@ -16,16 +16,17 @@ import {
 
 import './App.scss';
 
-import {Card, Grid, Typography} from "@mui/material";
+import { Grid, Typography } from "@mui/material";
 
-import {Masonry} from "@mui/lab";
+// import {Masonry} from "@mui/lab";
 // import { SVG } from 'leaflet';
 
-import {reservoirs} from "./objects";
-import {toTitleCase} from './utils';
+import { reservoirs } from "./objects";
+import { toTitleCase } from './utils';
 import ReservoirStorageTable from "./components/ReservoirStorageTable.tsx";
 import Box from "@mui/material/Box";
 import SnowpackChart from "./components/SnowpackChart";
+import { DataCard } from './components/DataCard.tsx';
 
 const MAX_CAPACITY = 26.134000;
 
@@ -39,14 +40,13 @@ const reservoirNames = reservoirs.map(r => r.name);
 
 const getReservoir = (res) => reservoirs.find(r => r.name === res);
 
-const H1 = ({children}) => <Typography variant="h1">{children}</Typography>;
-const H2 = ({children}) => <Typography variant="h2">{children}</Typography>;
-const H3 = ({children}) => <Typography variant="h3">{children}</Typography>;
-const H4 = ({children}) => <Typography variant="h4">{children}</Typography>;
-const DataCard = ({children, ...props}) => <Card className="data-card" {...props}>{children}</Card>;
+const H1 = ({ children }) => <Typography variant="h1">{children}</Typography>;
+const H2 = ({ children }) => <Typography variant="h2">{children}</Typography>;
+const H3 = ({ children }) => <Typography variant="h3">{children}</Typography>;
+const H4 = ({ children }) => <Typography variant="h4">{children}</Typography>;
 
 const USBRError = () => <div
-    style={{color: 'red'}}>{"Uh-oh! There's something wrong with USBR's server. Please refresh or try again tomorrow."}</div>
+    style={{ color: 'red' }}>{"Uh-oh! There's something wrong with USBR's server. Please refresh or try again tomorrow."}</div>
 
 function App() {
     const [storageConditions, setStorageConditions] = useState({});
@@ -60,8 +60,8 @@ function App() {
     useEffect(() => {
         let _systemStorage = 0;
         axios.get('https://www.usbr.gov/lc/region/g4000/riverops/webreports/accumweb.json')
-            .then(({data}) => {
-                if (data.includes('message')) {
+            .then(({ data }) => {
+                if (typeof data === 'string' && data.includes('message')) {
                     setStorageError(true);
                     return;
                 }
@@ -97,7 +97,7 @@ function App() {
 
     }, []);
 
-    const ReservoirMarker = ({name, position, capacity}) => {
+    const ReservoirMarker = ({ name, position, capacity }) => {
         const [lat, lon] = position;
 
         const resScale = capacity > 5 ? 1.0 : 3.0;
@@ -137,17 +137,17 @@ function App() {
                 {conditions && <Popup>
                     <b>{name}</b>
                     {conditions ? <div>
-                        Storage: {conditions.storage}<br/>
+                        Storage: {conditions.storage}<br />
                         As of {conditions.time}
                     </div> : null}
                 </Popup>}
-                {conditions && <Polygon pathOptions={{fillColor: 'blue', fillOpacity: 0.75, stroke: null}}
-                                        positions={actualShape}/>}
-                <Polygon pathOptions={{fillColor: 'blue', color: 'blue', fillOpacity: 0.1}} positions={baseShape}>
+                {conditions && <Polygon pathOptions={{ fillColor: 'blue', fillOpacity: 0.75, stroke: null }}
+                    positions={actualShape} />}
+                <Polygon pathOptions={{ fillColor: 'blue', color: 'blue', fillOpacity: 0.1 }} positions={baseShape}>
                     <Tooltip direction="bottom" offset={[0, 0]} opacity={1} permanent>
                         <b>{name}</b>
-                        {conditions && <div style={{textAlign: 'left'}}>
-                            {`${conditions.storage} MAF (${Math.round(conditions.storage / capacity * 100)}%)`}<br/>
+                        {conditions && <div style={{ textAlign: 'left' }}>
+                            {`${conditions.storage} MAF (${Math.round(conditions.storage / capacity * 100)}%)`}<br />
                         </div>}
                     </Tooltip>
                 </Polygon>
@@ -156,7 +156,7 @@ function App() {
         )
     }
 
-    const ReservoirCondition = ({name, position, capacity}) => {
+    const ReservoirCondition = ({ name, position, capacity }) => {
         const conditions = storageConditions[name];
         return (
             <div>
@@ -168,12 +168,12 @@ function App() {
         )
     }
 
-    const Reach = ({reach}) => {
+    const Reach = ({ reach }) => {
         const res1 = getReservoir(reach[0]);
         const res2 = getReservoir(reach[1]);
         const positions = [res1.position, res2.position];
         return (
-            <Polyline positions={positions}/>
+            <Polyline positions={positions} />
         )
     }
 
@@ -184,7 +184,7 @@ function App() {
 
             <Grid container columns={12} spacing={2}>
 
-                <Grid item xs={0} md={0} lg={1}/>
+                <Grid item xs={0} md={0} lg={1} />
 
                 <Grid item xs={12} md={12} lg={10}>
 
@@ -193,7 +193,7 @@ function App() {
 
                         <DataCard>
                             <H3>System Storage</H3>
-                            {storageError ? <USBRError/> : <H4>{system.storage || "loading..."} MAF</H4>}
+                            {storageError ? <USBRError /> : <H4>{system.storage || "loading..."} MAF</H4>}
                         </DataCard>
 
                         <DataCard>
@@ -201,7 +201,7 @@ function App() {
                             <div>
                                 <div>Bluer = higher storage percent</div>
                                 <div>* included in system storage calculation</div>
-                                <ReservoirStorageTable reservoirs={reservoirs} conditions={storageConditions}/>
+                                <ReservoirStorageTable reservoirs={reservoirs} conditions={storageConditions} />
                             </div>
                         </DataCard>
 
@@ -209,7 +209,7 @@ function App() {
                             <H3>System Map</H3>
                             <div className="map-wrapper">
                                 <MapContainer center={mead.position} zoom={6}
-                                              scrollWheelZoom={true}>
+                                    scrollWheelZoom={true}>
                                     <TileLayer
                                         attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
                                         url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
@@ -219,8 +219,8 @@ function App() {
                                 </MapContainer>
                             </div>
                             <div>
-                                Data Source: <a
-                                href="https://www.usbr.gov/lc/region/g4000/riverops/hourly7.html">https://www.usbr.gov/lc/region/g4000/riverops/hourly7.html</a>
+                                Data source: <a
+                                    href="https://www.usbr.gov/lc/region/g4000/riverops/hourly7.html">https://www.usbr.gov/lc/region/g4000/riverops/hourly7.html</a>
                             </div>
                         </DataCard>
 
@@ -228,14 +228,18 @@ function App() {
 
                     <Box>
                         <H2>Hydrologic conditions</H2>
-                        <H3>Snow accumulation</H3>
-                        <SnowpackChart/>
+                        <DataCard>
+                            <H3>Snow accumulation</H3>
+                            <SnowpackChart />
+                        </DataCard>
                     </Box>
 
                     <Box id="study">
                         <H2>24-Month Study Projections</H2>
-                        <img src="https://www.usbr.gov/lc/region/g4000/riverops/WebReports/crmmsCloud_powell.png"/>
-                        <img src="https://www.usbr.gov/lc/region/g4000/riverops/WebReports/crmmsCloud_mead.png"/>
+                        <DataCard>
+                            <img src="https://www.usbr.gov/lc/region/g4000/riverops/WebReports/crmmsCloud_powell.png" />
+                            <img src="https://www.usbr.gov/lc/region/g4000/riverops/WebReports/crmmsCloud_mead.png" />
+                        </DataCard>
                     </Box>
 
                 </Grid>

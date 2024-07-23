@@ -149,7 +149,7 @@ const SnowpackChart = () => {
                 layout={layout}
                 style={{width: '100%'}}
             />
-            <div>Source data: <a target="_blank"
+            <div>Data source: <a target="_blank"
                                  href="https://nwcc-apps.sc.egov.usda.gov/awdb/basin-plots/POR/WTEQ/assocHUC2/14_Upper_Colorado_Region.html">https://nwcc-apps.sc.egov.usda.gov/awdb/basin-plots/POR/WTEQ/assocHUC2/14_Upper_Colorado_Region.html</a>
             </div>
         </div>
