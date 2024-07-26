@@ -3,7 +3,11 @@ export const reservoirs = [
         name: 'Lake Powell',
         position: [36.93649, -111.48396],
         capacity: 24.322000,
-        code: 919,
+        rise: {
+            catalog: 2362,
+            elevation: 508,
+            storage: 509
+        },
         system: true,
     },
     {
@@ -11,7 +15,10 @@ export const reservoirs = [
         position: [36.0163, -114.7374], // [lat, lon]
         capacity: 26.134000, // maf, total
         region: 'lb',
-        code: 921,
+        rise: {
+            elevation: 6123,
+            storage: 6124
+        },
         system: true,
     },
     {
