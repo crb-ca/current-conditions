@@ -2,8 +2,6 @@ import {useEffect, useState} from "react";
 import {DataCard} from "./DataCard";
 import ReservoirStorageTable from "./ReservoirStorageTable";
 import {FeatureGroup, MapContainer, Polygon, Polyline, Popup, TileLayer, Tooltip} from "react-leaflet";
-import axios from "axios";
-import * as d3 from 'd3';
 import moment from 'moment';
 
 import {reservoirs} from '../objects';
@@ -12,25 +10,17 @@ const mead = reservoirs[0];
 
 // const reservoirNames = reservoirs.map(r => r.name);
 
-const getReservoir = (res) => reservoirs.find(r => r.name === res);
+// const getReservoir = (res) => reservoirs.find(r => r.name === res);
 
 // import {toTitleCase} from '../utils';
 
-import {H2, H3, H4} from "./typographies";
-
-const rise = axios.create({
-    baseURL: "https://data.usbr.gov/rise/api/",
-    headers: {accept: "application/vnd.api+json"}
-})
+import {H3, H4} from "./typographies";
 
 const USBRError = () => <div
     style={{color: 'red'}}>{"Uh-oh! There's something wrong with USBR's server. Please refresh or try again tomorrow."}</div>
 
-const objToArrayString = (obj) => {
-    return Object.keys(obj).reduce((arr, k) => {
-        return [...arr, k, obj[k]];
-    }, []).join('.')
-}
+
+const round = (v, d) => Math.round(v * 10 ** d) / (10 ** d)
 
 const MAX_CAPACITY = 26.134000;
 
@@ -38,90 +28,7 @@ const BASE_BOTTOM_WIDTH = 0.25;
 const BASE_HEIGHT = 0.5;
 const BASE_TOP_WIDTH = 0.5;
 
-const ReservoirStoragePanel = () => {
-
-    const [storageConditions, setStorageConditions] = useState({});
-    const [storageError, setStorageError] = useState(false);
-    const [system, setSystem] = useState({
-        storage: 0,
-        storage30: 0,
-        storage365: 0,
-    });
-
-    const ReservoirCondition = ({name, position, capacity}) => {
-        const conditions = storageConditions[name];
-        return (
-            <div>
-                <H4>{name}</H4>
-                {conditions && <div>
-                    <p>Storage: {(conditions.storage)} MAF</p>
-                </div>}
-            </div>
-        )
-    }
-
-
-    useEffect(() => {
-        let _systemStorage = 0;
-        // see api documentation at https://data.usbr.gov/rise-api
-        const itemIds = reservoirs.filter(r => r.rise?.storage).map(r => r.rise.storage);
-        // Example API call to download all in jsom format:
-        // https://data.usbr.gov/rise/api/result/downloadall?query[]=itemId.6124.before.2024-07-18.after.2023-07-18.order.ASC&type=json&filename=RISE%20Time%20Series%20Query%20Package%20(2024-07-25)&order=ASC
-        const oneWeekAgo = moment().subtract(1, 'week');
-        const oneYearPrior = oneWeekAgo.clone().subtract(1, 'year');
-        const baseQueryParams = {
-            before: oneWeekAgo.format('YYYY-MM-DD'),
-            after: oneYearPrior.format('YYYY-MM-DD'),
-            order: 'ASC',
-        }
-        const query = itemIds.map(itemId => {
-            return objToArrayString({itemId, ...baseQueryParams});
-        });
-
-        const params = {query, type: 'json', order: 'ASC'}
-        console.log(params);
-        rise.get('result/downloadall', {params}).then(resp => {
-            console.log(resp.data);
-        }).catch(reason => {
-            console.log(reason);
-        })
-        // axios.get('https://www.usbr.gov/lc/region/g4000/riverops/webreports/accumweb.json')
-        //     .then(({data}) => {
-        //         if (typeof data === 'string') {
-        //             setStorageError(true);
-        //             return;
-        //         }
-        //         const _storageConditions = data.Series.filter(s => s.DataTypeName === 'storage, end of period reading')
-        //             .reduce((obj, data) => {
-        //                 const name = toTitleCase(data.SiteName);
-        //                 if (!reservoirNames.includes(name)) {
-        //                     return obj;
-        //                 }
-        //                 const series = data.Data.filter(d => !!d.v);
-        //                 const d0 = series.slice(-1)[0];
-        //                 const s0 = Number(d0.v);
-        //                 const s30 = Number(series.slice(-31, -30)[0].v);
-        //                 const s365 = Number(series[0].v);
-        //                 _systemStorage += s0;
-        //                 return {
-        //                     ...obj,
-        //                     [name]: {
-        //                         time: d0.t,
-        //                         storage: Math.round(s0 / 1e3) / 1000,
-        //                         storage30: Math.round(s30 / 1e3) / 1000,
-        //                         storage365: Math.round(s365 / 1e3) / 1000,
-        //                     }
-        //                 };
-        //             }, {});
-        //         setSystem({
-        //             ...system,
-        //             storage: Math.round(_systemStorage / 1e3) / 1e3,
-        //         });
-        //         setStorageConditions(_storageConditions);
-        //     });
-
-
-    }, []);
+const ReservoirStoragePanel = ({systemConditions, storageConditions, storageError}) => {
 
     const ReservoirMarker = ({name, position, capacity}) => {
         const [lat, lon] = position;
@@ -158,6 +65,7 @@ const ReservoirStoragePanel = () => {
             ]
         }
 
+        // @ts-ignore
         return (
             <FeatureGroup>
                 {conditions && <Popup>
@@ -183,25 +91,30 @@ const ReservoirStoragePanel = () => {
 
     }
 
-    const Reach = ({reach}) => {
-        const res1 = getReservoir(reach[0]);
-        const res2 = getReservoir(reach[1]);
-        const positions = [res1.position, res2.position];
-        return (
-            <Polyline positions={positions}/>
-        )
-    }
+    // const Reach = ({reach}) => {
+    //     const res1 = getReservoir(reach[0]);
+    //     const res2 = getReservoir(reach[1]);
+    //     const positions = [res1.position, res2.position];
+    //     return (
+    //         <Polyline positions={positions}/>
+    //     )
+    // }
 
+    const checkedTime = storageConditions['Lake Mead']?.time;
+    const checkedTimeFormatted = moment(checkedTime).format('YYYY-MM-DD');
 
     return (
         <div>
+            <div style={{paddingBottom: 10}}>{`Storage values as of: ${checkedTimeFormatted}`}</div>
             <DataCard>
                 <H3>System Storage</H3>
-                {storageError ? <USBRError/> : <H4>{system.storage || "loading..."} MAF</H4>}
+                {systemConditions ? <div>
+                    <H4>{round(systemConditions.storage, 3)} MAF</H4>
+                </div> : <div>Loading...</div>}
             </DataCard>
 
             <DataCard>
-                <H3>Reservoirs</H3>
+                <H3>Reservoir Storage</H3>
                 <div>
                     <div>Bluer = higher storage percent</div>
                     <div>* included in system storage calculation</div>
@@ -212,7 +125,7 @@ const ReservoirStoragePanel = () => {
             <DataCard>
                 <H3>System Map</H3>
                 <div className="map-wrapper">
-                    <MapContainer center={mead.position} zoom={6}
+                    <MapContainer center={mead.position} zoom={5}
                                   scrollWheelZoom={true}>
                         <TileLayer
                             attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'

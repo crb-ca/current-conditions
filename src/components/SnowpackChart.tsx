@@ -59,7 +59,6 @@ const medianPeakSWETraceProps = {
 
 // Plot layout
 const layout = {
-    // title: 'Snowpack Chart',
     xaxis: {
         title: 'Date',
         range: ['1999-10-01', '2000-09-30'],
@@ -87,12 +86,13 @@ const layout = {
     ]
 }
 
-const SnowpackChart = () => {
+const SnowpackChart = ({title, regionTitle}) => {
     // const [data, setData] = useState({});
     // const [medianPeakSWE, setMedianPeakSWE] = useState({});
     const [traces, setTraces] = useState([]);
-    useEffect(() => {
-        d3.csv('https://nwcc-apps.sc.egov.usda.gov/awdb/basin-plots/POR/WTEQ/assocHUC2/14_Upper_Colorado_Region.csv')
+    const dataSourceCsv = `https://nwcc-apps.sc.egov.usda.gov/awdb/basin-plots/POR/WTEQ/assocHUC2/${regionTitle}.csv`;
+    useEffect( () => {
+        d3.csv(dataSourceCsv)
             .then(data => {
                     const dates = data.map(d => (d.date >= '10-01' ? '1999-' : '2000-') + d.date);
 
@@ -141,16 +141,17 @@ const SnowpackChart = () => {
                     setTraces([todayLine, ...percentTraces, ...annualTraces.toReversed(), medianPeakSWETrace]);
                 }
             )
-    }, []);
+    }, [dataSourceCsv]);
+    const dataSourceHtml = `https://nwcc-apps.sc.egov.usda.gov/awdb/basin-plots/POR/WTEQ/assocHUC2/${regionTitle}.html`
     return (
-        <div>
+        <div style={{width: "100%"}}>
             <Plot
                 data={traces}
-                layout={layout}
+                layout={{...layout, title}}
                 style={{width: '100%'}}
             />
             <div>Data source: <a target="_blank"
-                                 href="https://nwcc-apps.sc.egov.usda.gov/awdb/basin-plots/POR/WTEQ/assocHUC2/14_Upper_Colorado_Region.html">https://nwcc-apps.sc.egov.usda.gov/awdb/basin-plots/POR/WTEQ/assocHUC2/14_Upper_Colorado_Region.html</a>
+                                 href={dataSourceHtml}>{dataSourceHtml}</a>
             </div>
         </div>
     )

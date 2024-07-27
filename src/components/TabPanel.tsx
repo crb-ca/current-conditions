@@ -1,4 +1,4 @@
-import {ReactNode} from 'react'
+import {ReactNode, memo} from 'react'
 import Box from "@mui/material/Box";
 
 interface TabPanelProps {
@@ -15,11 +15,12 @@ const TabPanel = (props: TabPanelProps) => {
         <div
             role="tabpanel"
             hidden={value !== index}
+            // style={{display: value === index ? 'block' : 'none'}}
             id={`simple-tabpanel-${index}`}
             aria-labelledby={`simple-tab-${index}`}
             {...other}
         >
-            {value === index && <Box sx={{p: 3}}>{children}</Box>}
+            <Box sx={{p: 3}}>{children}</Box>
         </div>
     );
 }

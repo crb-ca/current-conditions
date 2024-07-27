@@ -6,11 +6,11 @@ import TableContainer from '@mui/material/TableContainer';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import Paper from '@mui/material/Paper';
-import Box from '@mui/material/Box';
+// import Box from '@mui/material/Box';
 
 // import {DataGrid} from '@mui/x-data-grid';
 
-const round = (v, r) => Math.round(v * r) / r;
+const round = (v, d) => Math.round(v * 10 ** d) / 10 ** d;
 
 import chroma from 'chroma-js';
 
@@ -49,8 +49,8 @@ const ReservoirStorageTable: React.FC<ReservoirStorageTableProps> = ({reservoirs
                     const color = getColor(percentCapacity / 100);
                     const diff30abs = condition.storage - condition.storage30;
                     const diff365abs = condition.storage - condition.storage365;
-                    const diff30rel = round(diff30abs / condition.storage30 * 100, 10);
-                    const diff365rel = round(diff365abs / condition.storage365 * 100, 10);
+                    const diff30rel = round(diff30abs / condition.storage30 * 100, 1);
+                    const diff365rel = round(diff365abs / condition.storage365 * 100, 1);
                     const diff30sign = diff30abs < 0 ? '' : '+';
                     const diff365sign = diff365rel < 0 ? '' : '+';
 
@@ -63,12 +63,13 @@ const ReservoirStorageTable: React.FC<ReservoirStorageTableProps> = ({reservoirs
                         {/*<TableCell align="right">{storage}</TableCell>*/}
                         <TableCell align="right">
                             <div>
-                                {`${storage} (${percentCapacity}%)`}
+                                {`${round(storage, 3)} (${percentCapacity}%)`}
                             </div>
                         </TableCell>
-                        <TableCell align="right">{`${round(diff30abs, 100)} (${diff30sign}${diff30rel}%)`}</TableCell>
-                        <TableCell align="right">{`${round(diff365abs, 100)} (${diff365sign}${diff365rel}%)`}</TableCell>
-                        <TableCell align="right">{round(capacity, 1000)}</TableCell>
+                        <TableCell align="right">{`${round(diff30abs, 3)} (${diff30sign}${diff30rel}%)`}</TableCell>
+                        <TableCell
+                            align="right">{`${round(diff365abs, 3)} (${diff365sign}${diff365rel}%)`}</TableCell>
+                        <TableCell align="right">{round(capacity, 3)}</TableCell>
                     </TableRow>
                 })}
             </TableBody>
