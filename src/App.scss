@@ -77,7 +77,10 @@ $navbar-height: 65px;
 }
 
 #study {
+  align-items: center;
   img {
     width: 100%;
+    // min-width: 500px;
+    max-width: 900px;
   }
 }

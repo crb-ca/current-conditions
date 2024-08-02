@@ -10,7 +10,9 @@ function Navbar() {
         <AppBar position="static" id="appbar">
             <Container maxWidth="xl">
                 <Toolbar disableGutters>
-                    <img alt="CRB logo" style={{height: 60, background: "white"}} src="/current-conditions/images/crb-logo.png"/>
+                    <a href="https://crb.ca.gov">
+                        <img alt="CRB logo" style={{ height: 60, background: "white" }} src="/current-conditions/images/crb-logo.png" />
+                    </a>
                     <Typography className="title" noWrap>
                         Current Conditions
                     </Typography>

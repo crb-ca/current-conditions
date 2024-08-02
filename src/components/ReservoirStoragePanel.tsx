@@ -127,10 +127,26 @@ const ReservoirStoragePanel = ({systemConditions, storageConditions, storageErro
                 <div className="map-wrapper">
                     <MapContainer center={mead.position} zoom={5}
                                   scrollWheelZoom={true}>
+
+                        <LayersControl position="topright">
+                            <BaseLayer checked name="OpenStreetMap">
                         <TileLayer
                             attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
                             url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
                         />
+                                {/* <TileLayer
+                                    url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+                                    attribution="&copy; OpenStreetMap contributors"
+                                /> */}
+                            </BaseLayer>
+                            <BaseLayer name="OpenTopoMap">
+                                <TileLayer
+                                    url="https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png"
+                                    attribution="Map data: &copy; OpenStreetMap contributors, SRTM | Map style: &copy; OpenTopoMap (CC-BY-SA)"
+                                />
+                            </BaseLayer>
+                        </LayersControl>
+
                         {/* {reaches.map(reach => <Reach key={String(reach)} reach={reach} />)} */}
                         {reservoirs.map(res => <ReservoirMarker key={res.name} {...res} />)}
                     </MapContainer>
