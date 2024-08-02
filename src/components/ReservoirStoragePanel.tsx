@@ -4,7 +4,9 @@ import ReservoirStorageTable from "./ReservoirStorageTable";
 import {FeatureGroup, MapContainer, Polygon, Polyline, Popup, TileLayer, Tooltip} from "react-leaflet";
 import moment from 'moment';
 
-import {reservoirs} from '../objects';
+import { reservoirs } from '../objects';
+
+const { BaseLayer } = LayersControl;
 
 const mead = reservoirs[0];
 
