@@ -25,9 +25,11 @@ $navbar-height: 65px;
   overflow: auto;
   margin-top: 0;
 }
+
 #outer-column {
   padding-left: 0;
 }
+
 #inner-column {
   padding-left: 16px;
 }
@@ -83,4 +85,12 @@ $navbar-height: 65px;
     // min-width: 500px;
     max-width: 900px;
   }
+}
+
+.leaflet-control-zoom {
+  display: none;
+}
+
+.leaflet-attribution-flag {
+  display: none !important;
 }

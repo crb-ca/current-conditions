@@ -26,12 +26,14 @@ const stats = {
             color: 'blue',
             width: 1,
         },
+        visible: 'legendonly'
     },
     "Median (POR)": {
         line: {
             dash: 'dash',
             color: 'green'
-        }
+        },
+        visible: 'legendonly'
     },
     "Median ('91-'20)": {
         line: {
@@ -43,6 +45,7 @@ const stats = {
             color: 'red',
             width: 1
         },
+        visible: 'legendonly'
     }
 }
 
@@ -91,23 +94,51 @@ const SnowpackChart = ({title, regionTitle}) => {
     // const [medianPeakSWE, setMedianPeakSWE] = useState({});
     const [traces, setTraces] = useState([]);
     const dataSourceCsv = `https://nwcc-apps.sc.egov.usda.gov/awdb/basin-plots/POR/WTEQ/assocHUC2/${regionTitle}.csv`;
-    useEffect( () => {
+    useEffect(() => {
         d3.csv(dataSourceCsv)
             .then(data => {
                     const dates = data.map(d => (d.date >= '10-01' ? '1999-' : '2000-') + d.date);
 
                     // quantiles
+                    const statValues = Object.keys(stats).reduce((obj, stat) => {
+                        return {
+                            ...obj,
+                            [stat]: data.map(d => d[stat]),
+                        }
+                    }, {})
                     const percentTraces = Object.keys(stats).map(stat => {
                         return (
                             {
                                 name: stat,
                                 x: dates,
-                                y: data.map(d => d[stat]),
+                                y: statValues[stat],
                                 opacity: 0.33,
                                 ...stats[stat]
                             }
                         )
                     });
+
+                    // shaded area for historical range
+                    const historicalRange = [
+                        {
+                            x: dates,
+                            y: statValues['Min'], // Minimum values
+                            type: 'scatter',
+                            fill: 'tozeroy',
+                            fillcolor: 'rgba(255, 0, 0, 0)',
+                            line: {width: 0},
+                            showlegend: false,
+                        },
+                        {
+                            name: "Range",
+                            x: dates,
+                            y: statValues['Max'], // Maximum values
+                            type: 'scatter',
+                            fill: 'tonexty',
+                            fillcolor: 'rgba(0, 0, 0, 0.1)',
+                            line: {width: 0}
+                        }
+                    ];
 
                     // annual traces; note that we are only doing the last 3 years, since it's unclear how valuable previous years are
                     // TODO: double check that the data maps to water years correctly
@@ -138,7 +169,7 @@ const SnowpackChart = ({title, regionTitle}) => {
                         ...medianPeakSWETraceProps
                     }
 
-                    setTraces([todayLine, ...percentTraces, ...annualTraces.toReversed(), medianPeakSWETrace]);
+                    setTraces([...historicalRange, todayLine, ...percentTraces, ...annualTraces.toReversed(), medianPeakSWETrace]);
                 }
             )
     }, [dataSourceCsv]);

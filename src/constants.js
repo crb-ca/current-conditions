@@ -1,0 +1,1 @@
+export const MAX_SYSTEM_CAPACITY = 26.134000;

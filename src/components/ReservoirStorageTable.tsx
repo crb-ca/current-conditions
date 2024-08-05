@@ -40,7 +40,7 @@ const ReservoirStorageTable: React.FC<ReservoirStorageTableProps> = ({reservoirs
             </TableHead>
             <TableBody>
                 {reservoirs.map(({name, capacity, system}) => {
-                    const condition = conditions[name];
+                    const condition = conditions && conditions[name];
                     if (!condition) {
                         return null;
                     }
