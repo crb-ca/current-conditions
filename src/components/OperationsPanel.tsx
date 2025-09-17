@@ -1,4 +1,4 @@
-import {DataCard} from "./DataCard";
+import DataCard from "./DataCard";
 import {H3} from "./typographies";
 
 const OperationsPanel = () => {

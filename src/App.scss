@@ -87,10 +87,23 @@ $navbar-height: 65px;
   }
 }
 
+#soil-moisture-map {
+  align-items: center;
+  img {
+    max-width: 500px;
+  }
+}
+
 .leaflet-control-zoom {
   display: none;
 }
 
 .leaflet-attribution-flag {
   display: none !important;
+}
+
+.plot-container {
+  .svg-container {
+    margin: auto !important;
+  }
 }

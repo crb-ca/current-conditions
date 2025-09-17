@@ -1,20 +1,18 @@
-import {useEffect, useState} from 'react'
+import { useEffect, useState } from 'react'
 
 import './App.scss';
 
-import {Box, Container, Grid, Tab, Tabs, createTheme, ThemeProvider} from "@mui/material";
+import { Box, Container, Grid, Tab, Tabs, createTheme, ThemeProvider } from "@mui/material";
 
-import {H3} from './components/typographies';
-import {DataCard} from "./components/DataCard";
-import SnowpackChart from "./components/SnowpackChart";
 import TabPanel from "./components/TabPanel";
 import OperationsPanel from "./components/OperationsPanel";
+import HydrologicConditionsPanel from './components/HydrologicConditionsPanel';
 import ReservoirStoragePanel from "./components/ReservoirStoragePanel";
 import moment from "moment";
 import Navbar from "./components/Navbar";
-import {getDataFromLocalOrApi} from './utils';
-import {reservoirs} from './objects';
-import {MAX_SYSTEM_CAPACITY} from './constants';
+import { getDataFromLocalOrApi } from './utils';
+import { reservoirs } from './objects';
+import { MAX_SYSTEM_CAPACITY } from './constants';
 
 const objToArrayString = (obj) => {
     return Object.keys(obj).reduce((arr, k) => {
@@ -52,11 +50,11 @@ function App() {
         // https://data.usbr.gov/rise/api/result/downloadall?query[]=itemId.6124.before.2024-07-18.after.2023-07-18.order.ASC&type=json&filename=RISE%20Time%20Series%20Query%20Package%20(2024-07-25)&order=ASC
         const itemIds = reservoirs.filter(r => r.rise?.storage).map(r => r.rise.storage);
         const after = moment().subtract(1.2, 'year').format('YYYY-MM-DD');
-        const baseQueryParams = {after, order: 'DESC'}
+        const baseQueryParams = { after, order: 'DESC' }
         const query = itemIds.map(itemId => {
-            return objToArrayString({itemId, ...baseQueryParams});
+            return objToArrayString({ itemId, ...baseQueryParams });
         });
-        const params = {query, type: 'json', order: 'ASC'}
+        const params = { query, type: 'json', order: 'ASC' }
         getDataFromLocalOrApi("data", "https://data.usbr.gov/rise/api/result/downloadall", params).then(data => {
             let _systemStorage = 0;
             const _storageConditions = {};
@@ -65,18 +63,18 @@ function App() {
                 if (!rData) {
                     return;
                 }
-                const {result: storage, dateTime: time} = rData[0];
+                const { result: storage, dateTime: time } = rData[0];
 
                 if (r.system) {
                     _systemStorage += storage / 1e6
                 }
                 _storageConditions[r.name] =
-                    {
-                        time,
-                        storage: storage / 1e6,
-                        storage30: rData[30].result / 1e6,
-                        storage365: rData[365].result / 1e6,
-                    }
+                {
+                    time,
+                    storage: storage / 1e6,
+                    storage30: rData[30].result / 1e6,
+                    storage365: rData[365].result / 1e6,
+                }
             });
             const _systemConditions = {
                 ...systemConditions,
@@ -99,7 +97,7 @@ function App() {
 
             <div>
 
-                <Navbar/>
+                <Navbar />
 
                 <Container>
 
@@ -107,12 +105,12 @@ function App() {
 
                         <Grid id="" item xs={12} md={12} lg={10}>
                             <div>
-                                <Box style={{marginLeft: 20, marginRight: 20}}>
+                                <Box style={{ marginLeft: 20, marginRight: 20 }}>
                                     <Tabs value={tabValue} onChange={handleChangeTab} aria-label="main dashboard tabs">
-                                        <Tab label="Storage" value={1}/>
-                                        <Tab label="Operations" value={2}/>
-                                        <Tab label="Hydrology" value={3}/>
-                                        <Tab label="Flows" value={4}/>
+                                        <Tab label="Storage" value={1} />
+                                        <Tab label="Operations" value={2} />
+                                        <Tab label="Hydrology" value={3} />
+                                        <Tab label="Flows" value={4} />
                                     </Tabs>
                                 </Box>
 
@@ -125,17 +123,11 @@ function App() {
                                 </TabPanel>
 
                                 <TabPanel index={3} value={tabValue}>
-                                    <DataCard>
-                                        <H3>Snow Accumulation</H3>
-                                        <SnowpackChart title={"Snowpack - Upper Colorado"}
-                                                       regionTitle="14_Upper_Colorado_Region"/>
-                                        <SnowpackChart title={"Snowpack - Lower Colorado"}
-                                                       regionTitle="15_Lower_Colorado_Region"/>
-                                    </DataCard>
+                                    <HydrologicConditionsPanel/>
                                 </TabPanel>
 
                                 <TabPanel index={2} value={tabValue}>
-                                    <OperationsPanel/>
+                                    <OperationsPanel />
                                 </TabPanel>
                             </div>
 

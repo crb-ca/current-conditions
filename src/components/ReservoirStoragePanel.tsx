@@ -1,5 +1,5 @@
 import moment from 'moment';
-import {DataCard} from "./DataCard";
+import DataCard from "./DataCard";
 import ReservoirStorageTable from "./ReservoirStorageTable";
 import SystemMap from "./SystemMap";
 import {reservoirs} from '../objects';
